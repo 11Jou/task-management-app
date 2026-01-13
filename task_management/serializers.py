@@ -24,3 +24,10 @@ class TaskSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
         return super().create(validated_data)
+    
+    
+class DashboardSerializer(serializers.Serializer):
+    total_tasks = serializers.IntegerField()
+    total_completed_tasks = serializers.IntegerField()
+    total_in_progress_tasks = serializers.IntegerField()
+    total_pending_tasks = serializers.IntegerField()
