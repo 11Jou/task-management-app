@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -27,3 +28,33 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(self, user):
+        token = super().get_token(user)
+        token['email'] = user.email
+        token['name'] = user.name
+        return token
+    
+    
+    def validate(self, attrs):
+        try:
+            data = super().validate(attrs)
+            refresh = self.get_token(self.user)
+            data['name'] = self.user.name
+            data['email'] = self.user.email
+            data['refresh'] = str(refresh)
+            data['access'] = str(refresh.access_token)
+            return data
+        except Exception as e:
+            raise serializers.ValidationError(e)
+    
+    
+class CustomTokenRefreshSerializer(TokenRefreshSerializer):
+    def validate(self, attrs):
+        try:
+            data = super().validate(attrs)
+            return data
+        except Exception as e:
+            raise serializers.ValidationError(e)
