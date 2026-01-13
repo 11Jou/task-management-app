@@ -7,4 +7,5 @@ urlpatterns = [
     path('<int:id>/', RetrieveUpdateDestroyTaskView.as_view(), name='retrieve_update_destroy_task'),
     path('bulk/', BulkCreateTasksView.as_view(), name='bulk_create_tasks'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('export/', ReportView.as_view(), name='export'),
 ]

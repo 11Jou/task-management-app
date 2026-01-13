@@ -31,3 +31,11 @@ class DashboardSerializer(serializers.Serializer):
     total_completed_tasks = serializers.IntegerField()
     total_in_progress_tasks = serializers.IntegerField()
     total_pending_tasks = serializers.IntegerField()
+    
+    
+
+
+class ReportExportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['title', 'description', 'status', 'created_at', 'updated_at']
