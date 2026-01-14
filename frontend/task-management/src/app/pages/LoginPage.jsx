@@ -1,19 +1,32 @@
-import { useState } from 'react'
-// import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useLoginMutation } from '../store/api/authApi'
-import { useAppDispatch } from '../store/hooks'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { setCredentials } from '../store/slices/authSlice'
+import Error from '../components/Error'
 
 export default function LoginPage() {
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const { isAuthenticated } = useAppSelector((state) => state.auth)
   const [login, { isLoading }] = useLoginMutation()
   const [error, setError] = useState(null)
-  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   })
+
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
+
+  // Don't render form if authenticated (redirecting)
+  if (isAuthenticated) {
+    return null
+  }
 
   const handleChange = (e) => {
     setFormData({
@@ -26,13 +39,12 @@ export default function LoginPage() {
     e.preventDefault()
     try {
       const result = await login(formData).unwrap()
-      console.log(result)
-      dispatch(setCredentials(result))
-      alert('Login successful!')
+      console.log(result.data)
+      dispatch(setCredentials(result.data))
+      navigate('/dashboard')
     } catch (error) {
-      alert('Login failed!')
-      console.error('Login failed:', error)
-      setError(error?.data?.detail || 'Login failed. Please try again.')
+      console.error('Login failed:', error.data.message)
+      setError(error?.data?.message || 'Login failed. Please try again.')
     }
   };
 
@@ -46,13 +58,9 @@ export default function LoginPage() {
             <p className="text-gray-600 text-lg">
                 Login to your account
             </p>
-          </div>
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-600">{error}</p>
-              </div>
-            )}
+        </div>
+      <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+          {error && <Error error={error} />}
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
@@ -89,13 +97,16 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div>
+          <div className="space-y-2">
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold text-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+              className="w-full bg-gray-800 hover:bg-gray-900 text-white py-3 px-4 rounded-lg font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
+            <Link to="/register" className="text-m text-bold text-gray-500 hover:text-gray-700">
+              Don't have an account? Register
+            </Link>
           </div>
         </form>
         </div>

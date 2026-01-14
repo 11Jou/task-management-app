@@ -1,20 +1,30 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useRegisterMutation } from '../store/api/authApi'
-import { useAppDispatch } from '../store/hooks'
-import { addNotification } from '../store/slices/uiSlice'
+import { useAppSelector } from '../store/hooks'
+import Error from '../components/Error'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
+  const { isAuthenticated } = useAppSelector((state) => state.auth)
   const [register, { isLoading }] = useRegisterMutation()
-  
+  const [error, setError] = useState(null)
   const [formData, setFormData] = useState({
     email: '',
     name: '',
     password: '',
     confirm_password: '',
   })
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
+
+  if (isAuthenticated) {
+    return null
+  }
 
   const handleChange = (e) => {
     setFormData({
@@ -27,7 +37,7 @@ export default function RegisterPage() {
     e.preventDefault()
     
     if (formData.password !== formData.confirm_password) {
-      console.error('Passwords do not match')
+      setError('Passwords do not match')
       return
     }
 
@@ -39,40 +49,24 @@ export default function RegisterPage() {
         confirm_password: formData.confirm_password,
       }).unwrap()
       
-      navigate('/login')
+      navigate('/')
     } catch (error) {
-      const errorMessage = error?.data?.email?.[0] || 
-                          error?.data?.password?.[0] || 
-                          error?.data?.detail || 
-                          'Registration failed. Please try again.'
-      dispatch(addNotification({
-        type: 'error',
-        message: errorMessage,
-      }))
+      setError(error?.data?.message || "Registration failed. Please try again.")
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4 py-12">
+      <div className="max-w-md w-full">
+          <h2 className="text-4xl font-bold text-gray-900 mb-2 text-center mb-8">
+            Create Your Account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link
-              to="/login"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              sign in to your existing account
-            </Link>
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
+        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+          {error && <Error error={error} />}
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div className="space-y-4">
             <div>
-              <label htmlFor="name" className="sr-only">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                 Name
               </label>
               <input
@@ -80,14 +74,14 @@ export default function RegisterPage() {
                 name="name"
                 type="text"
                 required
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 placeholder-gray-400 text-gray-900"
                 placeholder="Full name"
                 value={formData.name}
                 onChange={handleChange}
               />
             </div>
             <div>
-              <label htmlFor="email" className="sr-only">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email address
               </label>
               <input
@@ -96,14 +90,14 @@ export default function RegisterPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 placeholder-gray-400 text-gray-900"
                 placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
               <input
@@ -112,14 +106,14 @@ export default function RegisterPage() {
                 type="password"
                 autoComplete="new-password"
                 required
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 placeholder-gray-400 text-gray-900"
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
               />
             </div>
             <div>
-              <label htmlFor="confirm_password" className="sr-only">
+              <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-2">
                 Confirm Password
               </label>
               <input
@@ -128,7 +122,7 @@ export default function RegisterPage() {
                 type="password"
                 autoComplete="new-password"
                 required
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 placeholder-gray-400 text-gray-900"
                 placeholder="Confirm password"
                 value={formData.confirm_password}
                 onChange={handleChange}
@@ -136,16 +130,19 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <div>
+          <div className="space-y-2">
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold text-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
               {isLoading ? 'Creating account...' : 'Create account'}
             </button>
+            <Link to="/" className="text-m text-bold text-gray-500 hover:text-gray-700">
+              Already have an account? Login
+            </Link>
           </div>
         </form>
+        </div>
       </div>
     </div>
   )

@@ -1,9 +1,14 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
+import Layout from '../components/Layout/Layout'
 
 // Lazy load components for code splitting
 const LoginPage = lazy(() => import('../pages/LoginPage'))
 const RegisterPage = lazy(() => import('../pages/RegisterPage'))
+const DashboardPage = lazy(() => import('../pages/dashboard'))
+const TasksPage = lazy(() => import('../pages/dashboard/tasks'))
+const ReportPage = lazy(() => import('../pages/dashboard/report'))
+const CreateTaskPage = lazy(() => import('../pages/dashboard/tasks/create'))
 
 // Loading component
 const Loading = () => (
@@ -15,12 +20,33 @@ const Loading = () => (
 // Create router configuration
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <LoginPage />,
-  },
-  {
-    path: '/register',
-    element: <RegisterPage />,
+    element: <Layout />,
+    children: [
+      {
+        path: '/',
+        element: <LoginPage />,
+      },
+      {
+        path: '/register',
+        element: <RegisterPage />,
+      },
+      {
+        path: '/dashboard',
+        element: <DashboardPage />,
+      },
+      {
+        path: '/dashboard/tasks',
+        element: <TasksPage />,
+      },
+      {
+        path: '/dashboard/report',
+        element: <ReportPage />,
+      },
+      {
+        path: '/dashboard/tasks/create',
+        element: <CreateTaskPage />,
+      },
+    ],
   },
 ])
 

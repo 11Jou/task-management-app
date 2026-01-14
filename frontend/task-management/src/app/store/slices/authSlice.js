@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-// Load initial state from localStorage
 const getInitialState = () => {
     const token = localStorage.getItem('token')
     const refreshToken = localStorage.getItem('refreshToken')
@@ -25,7 +24,6 @@ const authSlice = createSlice({
             state.user = { email, name }
             state.isAuthenticated = true
 
-            // Persist to localStorage
             localStorage.setItem('token', access)
             localStorage.setItem('refreshToken', refresh)
             localStorage.setItem('user', JSON.stringify({ email, name }))
@@ -36,7 +34,6 @@ const authSlice = createSlice({
             state.user = null
             state.isAuthenticated = false
 
-            // Clear localStorage
             localStorage.removeItem('token')
             localStorage.removeItem('refreshToken')
             localStorage.removeItem('user')

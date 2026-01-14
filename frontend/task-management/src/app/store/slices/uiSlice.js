@@ -6,7 +6,6 @@ const uiSlice = createSlice({
         sidebarOpen: false,
         theme: 'light', // 'light' or 'dark'
         loading: false,
-        notifications: [],
     },
     reducers: {
         toggleSidebar: (state) => {
@@ -23,20 +22,6 @@ const uiSlice = createSlice({
         setLoading: (state, action) => {
             state.loading = action.payload
         },
-        addNotification: (state, action) => {
-            state.notifications.push({
-                id: Date.now(),
-                ...action.payload,
-            })
-        },
-        removeNotification: (state, action) => {
-            state.notifications = state.notifications.filter(
-                (notification) => notification.id !== action.payload
-            )
-        },
-        clearNotifications: (state) => {
-            state.notifications = []
-        },
     },
 })
 
@@ -45,9 +30,6 @@ export const {
     setSidebarOpen,
     setTheme,
     setLoading,
-    addNotification,
-    removeNotification,
-    clearNotifications,
 } = uiSlice.actions
 
 export default uiSlice.reducer
