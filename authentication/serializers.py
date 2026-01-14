@@ -48,7 +48,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             data['access'] = str(refresh.access_token)
             return data
         except Exception as e:
-            raise serializers.ValidationError(e)
+            raise AuthenticationFailed(e)
     
     
 class CustomTokenRefreshSerializer(TokenRefreshSerializer):
