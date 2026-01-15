@@ -43,7 +43,6 @@ export default function LoginPage() {
       dispatch(setCredentials(result.data))
       navigate('/dashboard')
     } catch (error) {
-      console.error('Login failed:', error.data.message)
       setError(error?.data?.message || 'Login failed. Please try again.')
     }
   };
