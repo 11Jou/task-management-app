@@ -11,10 +11,23 @@ export const taskApi = api.injectEndpoints({
                 `tasks/?page=${page}&page_size=${page_size}&search=${search}&status=${status}`,
             providesTags: ['Tasks'],
         }),
+        getTaskDetail: builder.query({
+            query: (id) => `tasks/${id}/`,
+            providesTags: ['Task'],
+        }),
+        deleteTask: builder.mutation({
+            query: (id) => ({
+                url: `tasks/${id}/`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Tasks'],
+        }),
     }),
 })
 
 export const {
     useGetDashboardStatsQuery,
     useGetTasksQuery,
+    useGetTaskDetailQuery,
+    useDeleteTaskMutation,
 } = taskApi

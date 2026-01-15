@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import Table from '../../../components/Dashboard/Table'
 import Pagination from '../../../components/Pagination'
-import { useGetTasksQuery } from '../../../store/api/taskApi'
+import SearchBar from '../../../components/SearchBar'
+import SelectOption from '../../../components/SelectOption'
+import { useGetTasksQuery , useDeleteTaskMutation } from '../../../store/api/taskApi'
 import Loading from '../../../components/Loading'
 import Error from '../../../components/Error'
 import { useNavigate } from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify'
 
 const headers = [
     { key: 'title', label: 'Title' },
@@ -20,6 +23,8 @@ export default function TasksPage() {
     const [search, setSearch] = useState('')
     const [status, setStatus] = useState('')
 
+    const [deleteTask, { isLoading: isDeleting }] = useDeleteTaskMutation()
+
     const { data, isLoading, error } = useGetTasksQuery({
         page,
         page_size: pageSize,
@@ -31,26 +36,33 @@ export default function TasksPage() {
     if (error) return <Error error="Failed to fetch tasks" />
 
     const handleView = (row) => {
-        console.log('View task:', row)
+        navigate(`/dashboard/tasks/${row.id}`)
     }
 
     const handleEdit = (row) => {
         console.log('Edit task:', row)
     }
 
-    const handleDelete = (row) => {
-        console.log('Delete task:', row)
+    const handleDelete = async (row) => {
+        if(isDeleting) return toast.info('Deleting task...')
+        if(window.confirm('Are you sure you want to delete this task?')) {
+            try {
+                await deleteTask(row.id)
+                toast.success('Task deleted successfully')
+            } catch (error) {
+                toast.error('Failed to delete task' , error.message)
+            }
+        }
     }
 
     const handlePageChange = (newPage) => {
         setPage(newPage)
-        // Scroll to top when page changes
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
     const handlePageSizeChange = (newPageSize) => {
         setPageSize(newPageSize)
-        setPage(1) // Reset to first page when page size changes
+        setPage(1) 
     }
 
     const handleAddTask = () => {
@@ -59,30 +71,26 @@ export default function TasksPage() {
 
     return (
         <div className='p-2 w-full'>
+            <ToastContainer />
             <div className='flex mb-4 justify-between'>
             <div className="flex gap-4">
-                <input
-                    type="text"
+                <SearchBar
                     placeholder="Search With Title or Description"
                     value={search}
                     onChange={(e) => {
                         setSearch(e.target.value)
                         setPage(1)
                     }}
-                    className="px-4 py-2 w-68 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
                 />
-                <select
+                <SelectOption
+                    placeholder="Select Status"
                     value={status}
                     onChange={(e) => {
-                        setStatus(e.target.value)
+                        setStatus(e.target.value) 
                         setPage(1)
                     }}
-                    className="px-2 py-2 w-32 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-                >
-                    <option value="">All Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="completed">Completed</option>
-                </select>
+                    options={['pending', 'completed']}
+                />
             </div>
             <div className='flex w-28'>
                 <button className='w-full bg-gray-800 hover:bg-gray-900 text-white py-2 px-2 rounded-lg text-md' onClick={handleAddTask}>
@@ -90,7 +98,6 @@ export default function TasksPage() {
                 </button>
             </div>
         </div>
-
             <Table 
                 headers={headers} 
                 data={data?.results || []}

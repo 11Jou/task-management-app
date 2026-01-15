@@ -9,6 +9,7 @@ const DashboardPage = lazy(() => import('../pages/dashboard'))
 const TasksPage = lazy(() => import('../pages/dashboard/tasks'))
 const ReportPage = lazy(() => import('../pages/dashboard/report'))
 const CreateTaskPage = lazy(() => import('../pages/dashboard/tasks/create'))
+const TaskDetailPage = lazy(() => import('../pages/dashboard/tasks/[id]'))
 
 // Loading component
 const Loading = () => (
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
       {
         path: '/dashboard/tasks/create',
         element: <CreateTaskPage />,
+      },
+      {
+        path: '/dashboard/tasks/:id',
+        element: <TaskDetailPage />,
       },
     ],
   },

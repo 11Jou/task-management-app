@@ -54,11 +54,12 @@ export default function Table({ headers = [], data = [], actions = {} }) {
                                         : value
 
                                     return (
-                                        <td
-                                            key={colIndex}
-                                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-                                        >
-                                            {renderCell}
+                                        <td key={colIndex} className="px-6 py-4 text-sm text-gray-900 max-w-xs">
+                                            <div className="truncate"
+                                                title={typeof renderCell === 'string' ? renderCell : undefined}
+                                            >
+                                                {renderCell}
+                                            </div>
                                         </td>
                                     )
                                 })}
