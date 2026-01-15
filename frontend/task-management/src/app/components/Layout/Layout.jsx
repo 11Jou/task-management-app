@@ -9,6 +9,5 @@ export default function Layout() {
     return <DashboardLayout />
   }
 
-  // For non-dashboard routes, render children directly
   return <Outlet />
 }
