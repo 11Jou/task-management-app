@@ -118,6 +118,15 @@ export default function ReportPage() {
                             {isLoading ? 'Generating Report...' : 'Generate Report & Download Excel'}
                         </button>
                     </div>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h3 className="text-sm font-semibold text-blue-900 mb-2">Report Information</h3>
+                        <ul className="text-sm text-blue-800 space-y-1">
+                            <li>• Select a date range to filter tasks by creation date</li>
+                            <li>• Choose a status to filter tasks by status</li>
+                            <li>• Leave filters empty to include all tasks</li>
+                            <li>• The report will be downloaded as an Excel (.xlsx) file</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
