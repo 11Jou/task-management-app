@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from core.response import CustomResponse
 from rest_framework.permissions import IsAuthenticated
-from ..serializers import *
+from ..serializers import DashboardSerializer
 from ..models import Task
 from django.db.models import Count, Q
 

@@ -5,6 +5,7 @@ import SelectOption from '../../components/Inputs/SelectOption'
 
 export default function ReportPage() {
     const [exportTasks, { isLoading }] = useExportTasksMutation()
+
     
     const [filters, setFilters] = useState({
         from_date: '',
@@ -18,6 +19,7 @@ export default function ReportPage() {
             [name]: value
         }))
     }
+
 
     const handleGenerateReport = async () => {
         try {
@@ -50,7 +52,6 @@ export default function ReportPage() {
                 
                 <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Date Range Filters */}
                         <div className="space-y-4">
                             <h2 className="text-lg font-semibold text-gray-700">Date Range</h2>
                             
@@ -84,7 +85,6 @@ export default function ReportPage() {
                             </div>
                         </div>
 
-                        {/* Status Filter */}
                         <div className="space-y-4">
                             <h2 className="text-lg font-semibold text-gray-700">Task Status</h2>
                             
@@ -101,6 +101,7 @@ export default function ReportPage() {
                                     className="w-full"
                                     options={[
                                         { value: 'pending', label: 'Pending' },
+                                        { value: 'in_progress', label: 'In Progress' },
                                         { value: 'completed', label: 'Completed' }
                                     ]}
                                 />
@@ -108,26 +109,14 @@ export default function ReportPage() {
                         </div>
                     </div>
 
-                    {/* Generate Report Button */}
                     <div className="pt-4 border-t border-gray-200">
                         <button
                             onClick={handleGenerateReport}
                             disabled={isLoading}
-                            className="w-full bg-gray-800 hover:bg-gray-900 text-white py-3 px-4 rounded-lg font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                            className="w-full bg-gray-800 hover:bg-gray-900 text-white py-3 px-4 rounded-lg font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl cursor-pointer transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                         >
                             {isLoading ? 'Generating Report...' : 'Generate Report & Download Excel'}
                         </button>
-                    </div>
-
-                    {/* Info Section */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h3 className="text-sm font-semibold text-blue-900 mb-2">Report Information</h3>
-                        <ul className="text-sm text-blue-800 space-y-1">
-                            <li>• Select a date range to filter tasks by creation date</li>
-                            <li>• Choose a status to filter tasks by status</li>
-                            <li>• Leave filters empty to include all tasks</li>
-                            <li>• The report will be downloaded as an Excel (.xlsx) file</li>
-                        </ul>
                     </div>
                 </div>
             </div>

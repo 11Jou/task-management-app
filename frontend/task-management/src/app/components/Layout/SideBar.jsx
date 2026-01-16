@@ -10,7 +10,7 @@ export default function SideBar() {
         { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { to: '/dashboard/tasks', label: 'Tasks', icon: ClipboardList },
         { to: '/dashboard/tasks/create', label: 'Create Task', icon: CirclePlus },
-        { to: '/dashboard/report', label: 'Report', icon: FileText },
+        { to: '/dashboard/report', label: 'Analytics & Reports', icon: FileText },
     ];
 
     const dispatch = useAppDispatch()
