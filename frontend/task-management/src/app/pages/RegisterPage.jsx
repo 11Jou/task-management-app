@@ -51,6 +51,7 @@ export default function RegisterPage() {
       
       navigate('/')
     } catch (error) {
+      console.log(error)
       setError(error?.data?.message || "Registration failed. Please try again.")
     }
   }

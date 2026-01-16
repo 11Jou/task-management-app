@@ -36,18 +36,13 @@ export default function TasksPage() {
         status,
     })
 
-    // Handle 404 errors or empty pages - redirect to previous page
     useEffect(() => {
-        // Prevent infinite loops
         if (isAdjustingPage.current) {
             isAdjustingPage.current = false
             return
         }
-
-        // If there's a 404 error (page doesn't exist), go back to page 1
         if (error && error.status === 404 && page > 1) {
             isAdjustingPage.current = true
-            // Defer state update to avoid linter warning
             setTimeout(() => setPage(1), 0)
             return
         }
@@ -87,10 +82,8 @@ export default function TasksPage() {
             setIsConfirmDialogOpen(false)
             setSelectedTask(null)
             
-            // Check if current page will be empty after deletion
             const currentPageItemCount = data?.results?.length || 0
             if (currentPageItemCount === 1 && page > 1) {
-                // If this was the last item on the page, go to previous page
                 setPage(page - 1)
             }
         } catch (error) {
@@ -121,44 +114,46 @@ export default function TasksPage() {
     return (
         <div className='w-full'>
             <ToastContainer />
-            <div className='flex mb-4 justify-between'>
-            <div className="flex gap-4">
-                <SearchBar
-                    placeholder="Search With Title or Description"
-                    value={search}
-                    onChange={(e) => {
-                        setSearch(e.target.value)
-                        setPage(1)
+            <div className='flex flex-col sm:flex-row mb-4 gap-4 justify-between'>
+                <div className="flex flex-col sm:flex-row gap-4 flex-1">
+                    <SearchBar
+                        placeholder="Search With Title or Description"
+                        value={search}
+                        onChange={(e) => {
+                            setSearch(e.target.value)
+                            setPage(1)
+                        }}
+                    />
+                    <SelectOption
+                        placeholder="All Status"
+                        value={status}
+                        onChange={(e) => {
+                            setStatus(e.target.value) 
+                            setPage(1)
+                        }}
+                        options={[
+                            { value: 'pending', label: 'Pending' },
+                            { value: 'completed', label: 'Completed' }
+                        ]}
+                    />
+                </div>
+                <div className='flex sm:w-28'>
+                    <button className='w-full bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded-lg text-sm sm:text-md cursor-pointer transition-colors' onClick={handleAddTask}>
+                        Add Task
+                    </button>
+                </div>
+            </div>
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                <Table 
+                    headers={headers} 
+                    data={data?.results || []}
+                    actions={{
+                        onView: handleView,
+                        onEdit: handleEdit,
+                        onDelete: handleDelete,
                     }}
                 />
-                <SelectOption
-                    placeholder="All Status"
-                    value={status}
-                    onChange={(e) => {
-                        setStatus(e.target.value) 
-                        setPage(1)
-                    }}
-                    options={[
-                        { value: 'pending', label: 'Pending' },
-                        { value: 'completed', label: 'Completed' }
-                    ]}
-                />
             </div>
-            <div className='flex w-28'>
-                <button className='w-full bg-gray-800 hover:bg-gray-900 text-white py-2 px-2 rounded-lg text-md cursor-pointer' onClick={handleAddTask}>
-                    Add Task
-                </button>
-            </div>
-        </div>
-            <Table 
-                headers={headers} 
-                data={data?.results || []}
-                actions={{
-                    onView: handleView,
-                    onEdit: handleEdit,
-                    onDelete: handleDelete,
-                }}
-            />
             {data && (
                 <Pagination
                     currentPage={page}
