@@ -11,6 +11,24 @@ class BulkTaskSerializer(serializers.ListSerializer):
         tasks = [Task(user=user, **task_data) for task_data in validated_data]
         Task.objects.bulk_create(tasks)
         return tasks
+    
+    @transaction.atomic
+    def create(self, validated_data):
+        user = self.context['request'].user
+        tasks = [Task(user=user, **task_data) for task_data in validated_data]
+        Task.objects.bulk_create(tasks)
+        return tasks
+    
+    
+
+class BulkTaskExcelSerializer(serializers.Serializer):
+    file = serializers.FileField()
+    
+    def validate_file(self, value):
+        if not value.name.endswith('.xlsx') and not value.name.endswith('.xls'):
+            raise serializers.ValidationError('File must be an Excel file (.xlsx or .xls) only')
+        return value
+
 
 
 

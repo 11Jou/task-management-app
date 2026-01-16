@@ -16,12 +16,19 @@ class ReportView(APIView):
         
         from_date = request.query_params.get('from')
         to_date = request.query_params.get('to')
+        status = request.query_params.get('status')
+        
+        tasks = Task.objects.filter(user=request.user)
         
         if from_date and to_date:
-            tasks = Task.objects.filter(user=request.user, created_at__range=[from_date, to_date])
-            
-        else:
-            tasks = Task.objects.filter(user=request.user)
+            tasks = tasks.filter(created_at__range=[from_date, to_date])
+        elif from_date:
+            tasks = tasks.filter(created_at__gte=from_date)
+        elif to_date:
+            tasks = tasks.filter(created_at__lte=to_date)
+        
+        if status:
+            tasks = tasks.filter(status=status)
         
         serializer = self.serializer_class(tasks, many=True)
         

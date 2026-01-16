@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from core.response import CustomResponse
 from rest_framework.permissions import IsAuthenticated
 from ..serializers import *
 from ..models import Task
@@ -20,4 +21,4 @@ class DashboardView(APIView):
         )
 
         serializer = self.serializer_class(stats)
-        return Response(serializer.data)
+        return CustomResponse.success(message='Dashboard stats fetched successfully', data=serializer.data)

@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Table from '../../../components/Dashboard/Table'
 import Pagination from '../../../components/Pagination'
-import SearchBar from '../../../components/SearchBar'
-import SelectOption from '../../../components/SelectOption'
+import SearchBar from '../../../components/Inputs/SearchBar'
+import SelectOption from '../../../components/Inputs/SelectOption'
+import ConfirmDialog from '../../../components/ConfirmDialog'
 import { useGetTasksQuery , useDeleteTaskMutation } from '../../../store/api/taskApi'
 import Loading from '../../../components/Loading'
 import Error from '../../../components/Error'
@@ -24,6 +25,9 @@ export default function TasksPage() {
     const [status, setStatus] = useState('')
 
     const [deleteTask, { isLoading: isDeleting }] = useDeleteTaskMutation()
+    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+    const [selectedTask, setSelectedTask] = useState(null)
+    const isAdjustingPage = useRef(false)
 
     const { data, isLoading, error } = useGetTasksQuery({
         page,
@@ -32,27 +36,72 @@ export default function TasksPage() {
         status,
     })
 
+    // Handle 404 errors or empty pages - redirect to previous page
+    useEffect(() => {
+        // Prevent infinite loops
+        if (isAdjustingPage.current) {
+            isAdjustingPage.current = false
+            return
+        }
+
+        // If there's a 404 error (page doesn't exist), go back to page 1
+        if (error && error.status === 404 && page > 1) {
+            isAdjustingPage.current = true
+            // Defer state update to avoid linter warning
+            setTimeout(() => setPage(1), 0)
+            return
+        }
+
+        if (data && (!data.results || data.results.length === 0) && page > 1) {
+            const totalPages = Math.ceil((data.count || 0) / pageSize)
+            if (page > totalPages) {
+                isAdjustingPage.current = true
+                setTimeout(() => setPage(totalPages > 0 ? totalPages : 1), 0)
+            }
+        }
+    }, [error, data, page, pageSize])
+
     if (isLoading) return <Loading/>
-    if (error) return <Error error="Failed to fetch tasks" />
+    if (error && error.status !== 404) return <Error error="Failed to fetch tasks" />
 
     const handleView = (row) => {
         navigate(`/dashboard/tasks/${row.id}`)
     }
 
     const handleEdit = (row) => {
-        console.log('Edit task:', row)
+        navigate(`/dashboard/tasks/${row.id}/edit`)
     }
 
-    const handleDelete = async (row) => {
+    const handleDelete = (row) => {
         if(isDeleting) return toast.info('Deleting task...')
-        if(window.confirm('Are you sure you want to delete this task?')) {
-            try {
-                await deleteTask(row.id)
-                toast.success('Task deleted successfully')
-            } catch (error) {
-                toast.error('Failed to delete task' , error.message)
+        setSelectedTask(row)
+        setIsConfirmDialogOpen(true)
+    }
+
+    const handleConfirmDelete = async () => {
+        if (!selectedTask) return
+        
+        try {
+            await deleteTask(selectedTask.id).unwrap()
+            toast.success('Task deleted successfully')
+            setIsConfirmDialogOpen(false)
+            setSelectedTask(null)
+            
+            // Check if current page will be empty after deletion
+            const currentPageItemCount = data?.results?.length || 0
+            if (currentPageItemCount === 1 && page > 1) {
+                // If this was the last item on the page, go to previous page
+                setPage(page - 1)
             }
+        } catch (error) {
+            const errorMessage = error?.data?.message || error?.message || 'Failed to delete task'
+            toast.error(errorMessage)
         }
+    }
+
+    const handleCancelDelete = () => {
+        setIsConfirmDialogOpen(false)
+        setSelectedTask(null)
     }
 
     const handlePageChange = (newPage) => {
@@ -70,7 +119,7 @@ export default function TasksPage() {
     }
 
     return (
-        <div className='p-2 w-full'>
+        <div className='w-full'>
             <ToastContainer />
             <div className='flex mb-4 justify-between'>
             <div className="flex gap-4">
@@ -83,17 +132,20 @@ export default function TasksPage() {
                     }}
                 />
                 <SelectOption
-                    placeholder="Select Status"
+                    placeholder="All Status"
                     value={status}
                     onChange={(e) => {
                         setStatus(e.target.value) 
                         setPage(1)
                     }}
-                    options={['pending', 'completed']}
+                    options={[
+                        { value: 'pending', label: 'Pending' },
+                        { value: 'completed', label: 'Completed' }
+                    ]}
                 />
             </div>
             <div className='flex w-28'>
-                <button className='w-full bg-gray-800 hover:bg-gray-900 text-white py-2 px-2 rounded-lg text-md' onClick={handleAddTask}>
+                <button className='w-full bg-gray-800 hover:bg-gray-900 text-white py-2 px-2 rounded-lg text-md cursor-pointer' onClick={handleAddTask}>
                     Add Task
                 </button>
             </div>
@@ -116,6 +168,18 @@ export default function TasksPage() {
                     onPageSizeChange={handlePageSizeChange}
                 />
             )}
+            <ConfirmDialog
+                isOpen={isConfirmDialogOpen}
+                title="Delete Task"
+                message={`Are you sure you want to delete "${selectedTask?.title || 'this task'}"? This action cannot be undone.`}
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+                confirmText="Delete"
+                cancelText="Cancel"
+                isLoading={isDeleting}
+                confirmButtonClass="bg-red-600 hover:bg-red-700"
+                cancelButtonClass="bg-gray-300 hover:bg-gray-400"
+            />
         </div>
     )
 }

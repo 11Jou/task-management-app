@@ -21,7 +21,7 @@ export default function SideBar() {
     }
 
     return (
-        <aside className="w-64 bg-gray-800 text-white min-h-screen p-4 flex flex-col justify-between">
+        <aside className="fixed left-0 top-0 w-64 bg-gray-800 text-white min-h-screen p-4 flex flex-col justify-between">
             <nav className="space-y-2">
                 {menuItems.map((item) => {
                     const Icon = item.icon; 

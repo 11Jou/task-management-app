@@ -17,3 +17,9 @@ __pycache__/
 **/migrations/
 **/migrations/*.pyc
 *.sqlite3
+
+frontend/task-management/node_modules
+frontend/task-management/dist
+frontend/task-management/package-lock.json
+frontend/task-management/nginx.conf
+

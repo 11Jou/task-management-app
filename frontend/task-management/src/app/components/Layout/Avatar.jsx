@@ -6,7 +6,7 @@ export default function Avatar() {
     return (
         <div className="flex items-center gap-2">
             <User className="w-6 h-6" />
-            <span className="text-sm font-medium">{user.name}</span>
+            <span className="text-sm font-medium">{user?.name}</span>
         </div>
     )
 }

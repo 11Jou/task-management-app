@@ -13,7 +13,7 @@ export default function TaskDetailPage() {
     if (error) return <Error error="Failed to fetch task" />
 
     return (
-        <div className="p-4 w-full flex justify-center">
+        <div className="w-full flex justify-center">
             <div className="w-full max-w-3xl bg-white rounded-xl shadow-md p-6">
                 <div className="border-b pb-4 mb-4">
                     <h1 className="text-2xl font-bold text-gray-800">
