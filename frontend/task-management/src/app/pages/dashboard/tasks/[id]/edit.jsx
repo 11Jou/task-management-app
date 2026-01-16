@@ -53,7 +53,7 @@ export default function EditTaskPage() {
             toast.success('Task updated successfully!')
             setTimeout(() => {
                 navigate(`/dashboard/tasks/${id}`)
-            }, 3000)
+            }, 2000)
         } catch (error) {
             const errorMessage = error?.data?.message || 'Failed to update task. Please try again.'
             toast.error(errorMessage)

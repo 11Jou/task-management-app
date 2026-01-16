@@ -68,7 +68,7 @@ export default function CreateMultipleTasksPage() {
         if (file) {
             // Validate file type
             const validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel']
-            if (!validTypes.includes(file.type) && !file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+            if (!validTypes.includes(file.type) && !file.name.endsWith('.xlsx') && !file.name.endsWith('.xls') && !file.name.endsWith('.csv')) {
                 toast.error('Please upload a valid Excel file (.xlsx or .xls)')
                 e.target.value = ''
                 return
@@ -90,7 +90,7 @@ export default function CreateMultipleTasksPage() {
             setSelectedFile(null)
             setTimeout(() => {
                 navigate('/dashboard/tasks')
-            }, 3000)
+            }, 2000)
         } catch (error) {
             console.log(error)
             const errorMessage = (error?.data?.message || '') + ' ' + (error?.data?.error || '') || 'Failed to create tasks. Please try again.'
@@ -300,14 +300,14 @@ export default function CreateMultipleTasksPage() {
                                                     <span className="font-semibold">Click to upload</span> or drag and drop
                                                 </p>
                                                 <p className="text-xs text-gray-500">
-                                                    Excel files only (.xlsx, .xls)
+                                                    Excel files only (.xlsx, .xls, .csv)
                                                 </p>
                                             </>
                                         )}
                                     </div>
                                     <input
                                         type="file"
-                                        accept=".xlsx,.xls"
+                                        accept=".xlsx,.xls,.csv"
                                         onChange={handleExcelUpload}
                                         disabled={isLoadingExcel || selectedFile}
                                         className="hidden"

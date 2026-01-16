@@ -24,8 +24,8 @@ class BulkTaskExcelSerializer(serializers.Serializer):
     file = serializers.FileField()
     
     def validate_file(self, value):
-        if not value.name.endswith('.xlsx') and not value.name.endswith('.xls'):
-            raise serializers.ValidationError('File must be an Excel file (.xlsx or .xls) only')
+        if not value.name.endswith('.xlsx') and not value.name.endswith('.xls') and not value.name.endswith('.csv'):
+            raise serializers.ValidationError('File must be an Excel file (.xlsx or .xls or .csv) only')
         return value
 
 

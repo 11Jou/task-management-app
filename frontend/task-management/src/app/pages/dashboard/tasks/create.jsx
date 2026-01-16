@@ -41,7 +41,7 @@ export default function CreateTaskPage() {
             toast.success('Task created successfully!')
             setTimeout(() => {
                 navigate('/dashboard/tasks')
-            }, 3000)
+            }, 2000)
         } catch (error) {
             const errorMessage = error?.data?.message || 'Failed to create task. Please try again.'
             toast.error(errorMessage)
