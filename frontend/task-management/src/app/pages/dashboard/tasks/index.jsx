@@ -133,6 +133,7 @@ export default function TasksPage() {
                         }}
                         options={[
                             { value: 'pending', label: 'Pending' },
+                            { value: 'in_progress', label: 'In Progress' },
                             { value: 'completed', label: 'Completed' }
                         ]}
                     />

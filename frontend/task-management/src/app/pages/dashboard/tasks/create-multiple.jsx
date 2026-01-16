@@ -206,6 +206,7 @@ export default function CreateMultipleTasksPage() {
                                                 className="w-full"
                                                 options={[
                                                     { value: 'pending', label: 'Pending' },
+                                                    { value: 'in_progress', label: 'In Progress' },
                                                     { value: 'completed', label: 'Completed' }
                                                 ]}
                                             />

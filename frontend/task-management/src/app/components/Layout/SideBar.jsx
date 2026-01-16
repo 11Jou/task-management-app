@@ -2,7 +2,7 @@ import { LayoutDashboard, ClipboardList, FileText, LogOut, CirclePlus, X, Chevro
 import { NavLink } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logout } from '../../store/slices/authSlice';
-import { setSidebarOpen, toggleSidebar } from '../../store/slices/uiSlice';
+import { setSidebarOpen } from '../../store/slices/uiSlice';
 import { useNavigate } from 'react-router-dom';
 
 export default function SideBar() {
@@ -24,10 +24,6 @@ export default function SideBar() {
 
     const handleClose = () => {
         dispatch(setSidebarOpen(false))
-    }
-
-    const handleToggle = () => {
-        dispatch(toggleSidebar())
     }
 
     const handleNavClick = () => {
@@ -58,13 +54,6 @@ export default function SideBar() {
                             aria-label="Close sidebar"
                         >
                             <X size={24} />
-                        </button>
-                        <button
-                            onClick={handleToggle}
-                            className="hidden md:flex p-2 rounded-md hover:bg-gray-700 transition-colors"
-                            aria-label="Close sidebar"
-                        >
-                            <ChevronLeft size={24} />
                         </button>
                     </div>
                 )}
